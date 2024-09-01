@@ -2,7 +2,6 @@ import WeatherCard from './WeatherCard'
 import WeatherDetailsCard from './WeatherDetailsCard'
 import Search from './SearchComponent'
 
-import { KindeUser } from '@kinde-oss/kinde-auth-nextjs/types'
 import Image from 'next/image'
 import ClientReduxProvider from './reduxComponents/ClientReduxProvider'
 import axiosInstance from '../../axios/axios'
@@ -10,15 +9,19 @@ import axios from 'axios'
 import customFetch from '../../utils'
 import { fill } from 'lodash'
 import { Box, HStack, VStack } from '@chakra-ui/react'
-import { UserWeatherCard, Weather, weatherData } from '../home2/interfaces/WeatherCardInterfaces'
-
+import {
+  UserWeatherCard,
+  Weather,
+  weatherData,
+} from '../home2/interfaces/WeatherCardInterfaces'
+import { KindeUser } from '@kinde-oss/kinde-auth-nextjs/types'
 
 type HomeLayoutProps = {
   user: KindeUser
   userWeatherCards: UserWeatherCard[]
 }
 async function HomeLayout({ user, userWeatherCards }: HomeLayoutProps) {
-  const userData = await getUser(user) 
+  const userData = await getUser(user)
 
   const initialWeather = await getInitialWeatherData(
     userData?.townName ? userData.townName : 'Sofia'
@@ -26,7 +29,7 @@ async function HomeLayout({ user, userWeatherCards }: HomeLayoutProps) {
 
   //grid xl:grid-flow-row grid-flow-col gap-x-24 gap-y-16
 
-  return ( 
+  return (
     <div className="flex mt-10 justify-center items-center w-full h-screen md:h-full ">
       <ClientReduxProvider initialWeather={initialWeather}>
         <VStack spacing={4} className="w-full h-full">
@@ -71,7 +74,7 @@ async function HomeLayout({ user, userWeatherCards }: HomeLayoutProps) {
 }
 export default HomeLayout
 
- export async function getInitialWeatherData(
+export async function getInitialWeatherData(
   townName: string
 ): Promise<Weather | boolean> {
   try {

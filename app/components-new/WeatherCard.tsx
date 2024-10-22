@@ -16,7 +16,7 @@ import axios from 'axios'
 import { getAverageColor } from '../../lib/colorFunctions'
 import { UserWeatherCard, Weather } from '../home2/interfaces/WeatherCardInterfaces'
 
-type WeatherCardProps = {
+type WeatherCardProps = { 
   initialImage?: string | undefined
   initialWeather: boolean | Weather
   email: string | null

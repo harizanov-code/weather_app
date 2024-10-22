@@ -1,6 +1,6 @@
 import { KindeUser } from '@kinde-oss/kinde-auth-nextjs/types'
 
-export type FavouriteRequestProps = {
+export interface FavouriteRequestProps  {
     name: string
     townImage: string
     temp: string

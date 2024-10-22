@@ -13,6 +13,7 @@ import NewDetailsComponent from './NewDetailsComponent'
 import WeatherForecastCompartment from './WeatherForecastCompartment'
 import { Weather, weatherData } from '../interfaces/WeatherCardInterfaces'
 import { Skeleton } from '@/components/ui/skeleton'
+import axios from 'axios'
 
 export interface UserWeatherCard {
   id: number
@@ -41,6 +42,23 @@ async function PageLayout({ user, userWeatherCards }: HomeLayoutProps) {
   } finally {
     isLoading = false
   }
+  let forecastData
+  // try {
+  //   forecastData = await axios.get(
+  //     `api.openweathermap.org/data/2.5/forecast/daily?q=${
+  //       userData?.townName
+  //     }&cnt=${'7'}&appid=${process.env.WEATHER_API_SERVER_SIDE}`
+  //   )
+  //   // forecastData = await axios.get(
+  //   //   `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${userData?.townName}/last7days/next5days?unitGroup=metric&key=${process.env.VISUAL_CROSSING_API_KEY} `
+  //   // )`
+
+  //   console.log('forecastData', forecastData)
+  // } catch (error) {
+  //   console.error('Error fetching Forecast data:', error)
+  // }
+
+  console.log('InitialTown', userData?.townName)
   //grid xl:grid-flow-row grid-flow-col gap-x-24 gap-y-16
 
   return (

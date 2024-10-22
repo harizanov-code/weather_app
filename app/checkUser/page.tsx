@@ -14,5 +14,5 @@ export default async function CheckUser() {
     })
   } catch (error) {}
 
-  return redirect('/home')
+  return redirect('/home2')
 }

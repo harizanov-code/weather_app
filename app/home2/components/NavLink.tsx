@@ -44,7 +44,7 @@ const NavLink = ({ href, icon, text, spaceX }: NavLinkItem) => {
   return (
     <Link
       href={href}
-      className={`flex items-center space-x-${spaceX} ${
+      className={`flex items-center h-full space-x-${spaceX} ${
         isActive
           ? 'text-[#00dc72] border-b-2  rounded-b-[2px] border-b-[#00dc72] '
           : 'hover:text-[#00dc72] '

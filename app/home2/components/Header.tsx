@@ -20,6 +20,8 @@ import NavMenu from './NavMenu'
 import WeatherProLogo from './WeatherProLogo'
 import Home from '../../page'
 import { NavLinkItem } from './NavLink'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { KindeUser } from '@kinde-oss/kinde-auth-nextjs/types'
 
 const links: NavLinkItem[] = [
   { href: '/home2', icon: 'home', text: 'Home', spaceX: 1 },
@@ -32,20 +34,37 @@ const links: NavLinkItem[] = [
     spaceX: 1,
   },
 ]
+export type NavProps = {
+  isLoggedIn: boolean
+  user: KindeUser | null
+}
 
-const DesktopNav = () => (
-  <NavMenu layout="h-[60px] hidden md:flex space-x-6" spacing="" links={links} />
+const DesktopNav = ({ isLoggedIn, user }: NavProps) => (
+  <NavMenu
+    layout="h-[70px] hidden md:flex space-x-6"
+    spacing=""
+    links={links}
+    isLoggedIn={isLoggedIn}
+    user={user}
+  />
 )
 
-const MobileNav = () => (
+const MobileNav = ({ isLoggedIn, user }: NavProps) => (
   <NavMenu
     layout="grid"
     spacing="gap-4 p-4"
     links={links.map((link) => ({ ...link, spaceX: 2 }))}
+    isLoggedIn={isLoggedIn}
+    user={user}
   />
 )
 
 const Header = async () => {
+  const { isAuthenticated, getUser } = getKindeServerSession()
+  const isLoggedIn = await isAuthenticated()
+
+  const user = await getUser()
+
   return (
     <>
       <header className="bg-[#0f1a2a] text-white">
@@ -67,12 +86,12 @@ const Header = async () => {
                   side="left"
                   className="w-64 bg-[#0f1a2a] text-white"
                 >
-                  <MobileNav />
+                  <MobileNav isLoggedIn={isLoggedIn} user={user} />
                 </SheetContent>
               </Sheet>
             </div>
 
-            <DesktopNav />
+            <DesktopNav isLoggedIn={isLoggedIn} user={user} />
           </div>
         </div>
       </header>

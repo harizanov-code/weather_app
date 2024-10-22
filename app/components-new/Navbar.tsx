@@ -49,13 +49,13 @@ export default async function Example() {
           Weather
         </div>
         <div className="hidden  lg:flex  grow  items-center justify-end gap-x-6 text-light-blue  text-sm  lg:text-md capitalize font-normal leading-6">
-          {isLoggedIn ? (
+          {isLoggedIn ? ( 
             <>
               <Profile
                 picture={user?.picture}
                 given_name={user?.given_name}
               ></Profile>
-              <LogoutLink>Logout</LogoutLink>
+             
             </>
           ) : (
             <>

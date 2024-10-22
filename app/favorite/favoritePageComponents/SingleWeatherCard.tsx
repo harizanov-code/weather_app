@@ -11,6 +11,8 @@ import { getAverageColor } from '../../../lib/colorFunctions'
 import { StarIcon } from '@heroicons/react/24/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid'
 import { UserWeatherCard } from '../../home2/interfaces/WeatherCardInterfaces'
+import { useRefreshData } from '../FavoriteClientWrapper'
+import { useFavorites } from '../../hooks/useFavorite'
 
 type WeatherCardProps = {
   weatherCard: UserWeatherCard
@@ -22,81 +24,75 @@ export const SingleWeatherCard = ({
 
   email,
 }: WeatherCardProps) => {
+
   const { toast } = useToast()
+  const [isFavorite, setIsFavorite] = useState<boolean>(true)
+  const refreshData = useRefreshData()
+  const { unfavorite } = useFavorites()
+
   const [isDark, setIsDark] = useState(false)
-
-  const [isFavorite, setIsFavorite] = useState<boolean>(false)
-
   const [weather, setWeather] = useState<UserWeatherCard>(weatherCard)
 
-  type FavouriteRequestProps = {
-    name: string
-    townImage: string
-    temp: string
-    main: any
+  // const deleteFavoriteFromDb = async (name: string) => {
+  //   try {
+  //     await axios.delete('/api/favorites', {
+  //       params: { name: name, email: email },
+  //     })
+
+  //     toast({
+  //       variant: 'destructive',
+  //       title: 'You have removed a card from your favorites',
+  //     })
+
+  //     await refreshData()
+  //   } catch (error) {
+  //     console.error('Error saving favorite status:', error)
+  //   }
+  // }
+
+  const handleUnfavorite = async () => {
+    setIsFavorite(false)
+    await unfavorite({name: weatherCard.cardName,email: email})
   }
 
-  const saveFavoriteToDB = async ({
-    name,
-    townImage,
-    temp,
-    main,
-  }: FavouriteRequestProps) => {
-    try {
-      //   const response = await axios.post(
-      //     '/api/favorites',
 
-      //     {
-      //       email: email,
-      //       cardName: name,
-      //       image: townImage,
-      //       name: 'NAME',
-      //       temp: String(temp),
-      //       main: weather.main,
-      //     }
-      //   )
+//   const { toast } = useToast()
 
-      toast({
-        title: 'You have favorited a card',
-        description: 'Navigate the favorite page to see it in details',
-      })
-    } catch (error) {
-      console.error('Error saving favorite status:', error)
-    }
-  }
-  const deleteFavoriteToDb = async (name: string) => {
-    try {
-      const response = await axios.delete('/api/favorites', {
-        params: { name: name, email: email },
-      })
+//   const [isFavorite, setIsFavorite] = useState<boolean>(true)
 
-      toast({
-        variant: 'destructive',
-        title: 'You have removed a card from your favorites',
-      })
 
-      if (!response) {
-        throw new Error('Failed to save favorite status')
-      }
-    } catch (error) {
-      console.error('Error saving favorite status:', error)
-    }
-  }
+//  console.log("weather", weather)
 
-  const debouncedSaveFavorite = useDebouncedCallback({
-    callback: saveFavoriteToDB,
-    delay: 2500,
-  })
-  const debounceDeleteFavorite = useDebouncedCallback({
-    callback: deleteFavoriteToDb,
-    delay: 2500,
-  })
+//   const deleteFavoriteToDb = async (name: string) => {
+//     try {
+//       const response = await axios.delete('/api/favorites', {
+//         params: { name: name, email: email },
+//       })
 
-  const isMountingRef = useRef(false)
+//       toast({
+//         variant: 'destructive',
+//         title: 'You have removed a card from your favorites',
+//       })
 
-  useEffect(() => {
-    isMountingRef.current = true
-  }, [])
+//       if (!response) {
+//         throw new Error('Failed to save favorite status')
+//       }
+//     } catch (error) {
+//       console.error('Error saving favorite status:', error)
+//     }
+//   }
+
+ 
+  // const debounceDeleteFavorite = useDebouncedCallback({
+  //   callback: deleteFavoriteToDb,
+  //   delay: 2500,
+  // })
+
+  // const isMountingRef = useRef(false)
+
+  // useEffect(() => {
+  //   isMountingRef.current = true
+  // }, [])
 
   //   useEffect(() => {
   //     if (isMountingRef.current) {
@@ -105,16 +101,11 @@ export const SingleWeatherCard = ({
   //     }
 
   //     if (isFavorite) {
-  //       debouncedSaveFavorite({
-  //         name: name,
-  //         townImage: townImage,
-  //         temp: main.temp,
-  //         main: weatherData.main,
-  //       })
+       
   //     } else {
-  //       debounceDeleteFavorite(name)
+  //       debounceDeleteFavorite(weather.cardName)
   //     }
-  //   }, [isFavorite, debouncedSaveFavorite, debounceDeleteFavorite])
+  //   }, [isFavorite, debounceDeleteFavorite])
 
   // Function to check if an object is empty
   function isEmpty(obj: any) {
@@ -158,7 +149,7 @@ export const SingleWeatherCard = ({
             </div>
             <div
               className="absolute top-4 right-4 bg-white text-black p-2 rounded-full cursor-pointer"
-              onClick={() => setIsFavorite(!isFavorite)}
+              onClick={handleUnfavorite}
             >
               {isFavorite ? (
                 <StarIconSolid className="h-5 w-5" />

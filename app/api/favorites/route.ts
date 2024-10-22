@@ -3,9 +3,14 @@ import { prisma } from '../../../lib/prisma'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { request } from 'http'
 import { UserWeatherCard } from '../../home2/interfaces/WeatherCardInterfaces'
-
+import { revalidatePath, revalidateTag } from 'next/cache'
 
 export async function POST(req: Request) {
+  const { isAuthenticated } = getKindeServerSession()
+  const isAuth = await isAuthenticated()
+  if (!isAuth) {
+    return new Response('Unauthorized', { status: 401 })
+  }
   const {
     email,
     cardName,
@@ -45,7 +50,7 @@ export async function POST(req: Request) {
         userId: user.id,
       },
     })
-
+    revalidatePath('/favorite')
     return Response.json({ res: { cards } })
   } else {
     return Response.json({ res: { redirectLogin: true } })
@@ -74,7 +79,6 @@ export async function GET(req: NextRequest) {
     }
   }
 }
-
 export async function DELETE(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
   const name = searchParams.get('name')
@@ -99,10 +103,10 @@ export async function DELETE(req: NextRequest) {
           userId: user.id,
         },
       })
-
-      return Response.json({ res: { cards } })
+      revalidatePath('/favorite')
+      return NextResponse.json({ res: { cards } })
     }
-
-    return Response.json({ req: { card: card } })
+    revalidatePath('/favorite')
+    return NextResponse.json({ req: { card: card } })
   }
 }

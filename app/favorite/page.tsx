@@ -1,10 +1,9 @@
 import { redirect } from 'next/navigation'
-
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import AllWeatherCards from './favoritePageComponents/AllWeatherCards'
-import { getUser as getUserPreferences } from '../components-new/HomeLayout'
 import { Spinner } from '@chakra-ui/react'
 import { UserWeatherCard } from '../home2/interfaces/WeatherCardInterfaces'
+import AllWeatherCards from './favoritePageComponents/AllWeatherCards'
+
 export default async function Favorite() {
   const { isAuthenticated, getUser } = getKindeServerSession()
   const isLoggedIn = await isAuthenticated()
@@ -14,22 +13,15 @@ export default async function Favorite() {
   }
 
   const user = await getUser()
-
   const response = await getWeatherCards(user?.email)
-
   const weatherCards: UserWeatherCard[] = response.cards
 
   return (
     <div>
       {user && weatherCards ? (
-        <AllWeatherCards
-          weatherCards={weatherCards}
-          user={user}
-        ></AllWeatherCards>
+        <AllWeatherCards weatherCards={weatherCards} user={user} />
       ) : (
-        <>
-          <Spinner></Spinner>
-        </>
+        <Spinner />
       )}
     </div>
   )
@@ -45,11 +37,11 @@ async function getWeatherCards(email: string | null | undefined) {
           headers: {
             'Content-Type': 'application/json',
           },
-          next: { tags: ['weatherCards'] }, // Custom tags
+          cache: 'no-store', // This ensures we always get fresh data
         }
       )
       const data = await response.json()
-      return data.req // Extract the data from the response
+      return data.req
     }
   } catch (error) {
     return error

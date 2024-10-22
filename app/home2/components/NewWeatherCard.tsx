@@ -19,6 +19,7 @@ import {
   Weather,
   WeatherCardProps,
 } from '../interfaces/WeatherCardInterfaces'
+import { useFavorites } from '../../hooks/useFavorite'
 
 const NewWeatherCard = ({
   initialImage,
@@ -26,6 +27,8 @@ const NewWeatherCard = ({
   userWeatherCards,
   email,
 }: WeatherCardProps) => {
+  const { unfavorite, favorite } = useFavorites()
+
   const data = useSelector((state: IRootStore) => state.weather.weatherData)
   const selectorImage = useSelector(
     (state: IRootStore) => state.preferences.townImage
@@ -49,7 +52,7 @@ const NewWeatherCard = ({
 
   useEffect(() => {
     let isCardInDb = allWeatherCards.some((e) => e.cardName === name)
-
+    console.log('ISCARDINDB', isCardInDb)
     setIsFavorite(isCardInDb)
   }, [name, allWeatherCards])
 
@@ -84,54 +87,74 @@ const NewWeatherCard = ({
       if (isCardAlreadySaved) {
         return
       } else {
-        const response = await axios.post(
-          '/api/favorites',
-
-          {
-            email: email,
-            cardName: name,
-            image: townImage,
-            name: 'NAME',
-            temp: String(temp),
-            main: weatherData.main,
-          }
-        )
-
-        setAllWeatherCards(response.data.res.cards)
-
-        toast({
-          title: 'You have favorited a card',
-          description: 'Navigate the favorite page to see it in details',
+        const response = await favorite({
+          name,
+          townImage,
+          temp,
+          main,
+          email,
+          weatherData,
         })
+        // const response = await axios.post(
+        //   '/api/favorites',
+
+        //   {
+        //     email: email,
+        //     cardName: name,
+        //     image: townImage,
+        //     name: 'NAME',
+        //     temp: String(temp),
+        //     main: weatherData.main,
+        //   }
+        // )
+        if (response) {
+          setAllWeatherCards(response.data.res.cards)
+        }
       }
     } catch (error) {
       console.error('Error saving favorite status:', error)
     }
   }
 
-  const deleteFavoriteFromDb = async () => {
-    try {
-      const response = await axios.delete('/api/favorites', {
-        params: { name: name, email: email },
-      })
-      setAllWeatherCards(response.data.res.cards)
-      toast({
-        variant: 'destructive',
-        title: 'You have removed a card from your favorites',
-      })
-    } catch (error) {
-      console.error('Error deleting favorite status:', error)
+  const deleteFavoriteFromDb = async (name: string) => {
+    let isCardAlreadySaved = false
+    allWeatherCards.forEach((e) => {
+      if (e.cardName == name) {
+        isCardAlreadySaved = true
+      }
+    })
+
+    if (isCardAlreadySaved) {
+      try {
+        const response = await unfavorite({ name: name, email: email })
+        console.log('RESPONSEdeleteFavoriteFromDb ', response)
+        if (response) {
+          setAllWeatherCards(response.data.res.cards)
+        }
+        toast({
+          variant: 'destructive',
+          title: 'You have removed a card from your favorites',
+        })
+
+        if (!response) {
+          throw new Error('Failed to save favorite status')
+        }
+      } catch (error) {
+        console.error('Error saving favorite status:', error)
+      }
+    } else {
+      return
     }
   }
 
   const debouncedSaveFavorite = useDebouncedCallback({
     callback: saveFavoriteToDB,
-    delay: 2500,
+    delay: 1500,
   })
 
   const debouncedDeleteFavorite = useDebouncedCallback({
     callback: deleteFavoriteFromDb,
-    delay: 2500,
+    delay: 1500,
   })
 
   const isMountingRef = useRef(false)
@@ -155,7 +178,7 @@ const NewWeatherCard = ({
         allWeatherCards,
       })
     } else {
-      debouncedDeleteFavorite({ allWeatherCards, name })
+      debouncedDeleteFavorite(name)
     }
   }, [isFavorite, debouncedSaveFavorite, debouncedDeleteFavorite])
 

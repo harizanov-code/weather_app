@@ -1,8 +1,16 @@
 'use client'
 import Image from 'next/image'
 import { Fragment } from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
+import {
+  Disclosure,
+  Menu,
+  Transition,
+  MenuItems,
+  MenuItem,
+  MenuButton,
+} from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs/components'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -15,7 +23,7 @@ type ProfileProps = {
 
 const Profile = ({ picture, given_name }: ProfileProps) => {
   return (
-    <div className="flex items-center pt-2  px-6 sm:px-0 sm:ml-6 ">
+    <div className="flex items-center   px-6 sm:px-0 sm:ml-6 ">
       <div className="flex items-center justify-center">
         {/* <button
           type="button"
@@ -28,9 +36,9 @@ const Profile = ({ picture, given_name }: ProfileProps) => {
 
         {/* Profile dropdown */}
         <Menu as="div" className="relative ">
-          <div>
-            <Menu.Button className="relative flex rounded-full   text-sm lg:text-md focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-              <span className="absolute -inset-1.5 rounded-full bg-light-blue" />
+          <div className='-inset-1.5 rounded-full p-[6px] hover:bg-[#00dc72] bg-[white]'>
+            <MenuButton className="relative flex rounded-full   text-sm lg:text-md ">
+              
               <span className="sr-only">Open user menu</span>
               <Image
                 src={picture ? picture : '/vercel.svg'}
@@ -39,7 +47,7 @@ const Profile = ({ picture, given_name }: ProfileProps) => {
                 height={42}
                 className="h-12 w-12 rounded-full z-10"
               ></Image>
-            </Menu.Button>
+            </MenuButton>
           </div>
           <Transition
             as={Fragment}
@@ -50,8 +58,8 @@ const Profile = ({ picture, given_name }: ProfileProps) => {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-              <Menu.Item>
+            <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <MenuItem>
                 {({ active }) => (
                   <a
                     href="#"
@@ -63,8 +71,8 @@ const Profile = ({ picture, given_name }: ProfileProps) => {
                     Your Profile
                   </a>
                 )}
-              </Menu.Item>
-              <Menu.Item>
+              </MenuItem>
+              <MenuItem>
                 {({ active }) => (
                   <a
                     href="#"
@@ -76,21 +84,23 @@ const Profile = ({ picture, given_name }: ProfileProps) => {
                     Settings
                   </a>
                 )}
-              </Menu.Item>
-              <Menu.Item>
+              </MenuItem>
+              <MenuItem>
                 {({ active }) => (
-                  <a
-                    href="#"
-                    className={classNames(
-                      active ? 'bg-gray-100' : '',
-                      'block px-4 py-2 text-sm text-gray-700'
-                    )}
-                  >
-                    Sign out
-                  </a>
+                  <>
+                    <LogoutLink
+                      postLogoutRedirectURL="/home2"
+                      className={classNames(
+                        active ? 'bg-gray-100' : '',
+                        'block px-4 py-2 text-sm text-gray-700'
+                      )}
+                    >
+                      Sign out
+                    </LogoutLink>
+                  </>
                 )}
-              </Menu.Item>
-            </Menu.Items>
+              </MenuItem>
+            </MenuItems>
           </Transition>
         </Menu>
       </div>
